@@ -6,7 +6,7 @@ Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 Once Helm is set up properly, add the repo as follows:
 
 ```console
-helm repo add <alias> https://akankshhakumari393.github.io/helm-charts
+helm repo add <alias> https://akankshakumari393.github.io/helm-charts
 ```
 
 If you had already added this repo earlier, run `helm repo update` to retrieve
