@@ -10,13 +10,21 @@ helm repo add <alias> https://akankshakumari393.github.io/helm-charts
 ```
 
 If you had already added this repo earlier, run `helm repo update` to retrieve
-the latest versions of the packages.  You can then run `helm search repo
-<alias>` to see the charts.
+the latest versions of the packages.  
 
-To install the `<chart-name>` chart:
+You can use the `helm search` command to look for charts in this repo.
 
-    helm install my-<chart-name> <alias>/<chart-name>
+```console
+helm search repo <alias> 
+```
 
+To install the a particular chart from this repo:
+
+```console
+helm install my-<chart-name> <alias>/<chart-name>
+```
 To uninstall the chart:
 
-    helm uninstall my-<chart-name>
+```console
+helm uninstall my-<chart-name>
+```
