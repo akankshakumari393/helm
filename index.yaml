@@ -1,5 +1,16 @@
 apiVersion: v1
 entries:
+  convalkontroller:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2022-05-08T08:30:41.984435153Z"
+    description: A validation webhook controller for Depkon resource
+    digest: e2c6d015a2f88f0af94475367558d4ee3e49f800149857d7a14354bd86271410
+    name: convalkontroller
+    type: application
+    urls:
+    - https://github.com/akankshakumari393/helm-charts/releases/download/convalkontroller-0.1.0/convalkontroller-0.1.0.tgz
+    version: 0.1.0
   depkon-operator:
   - apiVersion: v2
     appVersion: 0.0.1
