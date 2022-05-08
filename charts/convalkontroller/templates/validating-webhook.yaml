@@ -1,0 +1,52 @@
+{{/*
+Generate certificates for convalkontroller 
+*/}}
+# creating a list of alternate names {releaseName}-{chartName}.{releasenamespace}.svc, {releaseName}-{chartName}.{releasenamespace}.svc for our server
+{{- $altNames := list ( printf "%s.%s" (include "convalkontroller.fullname" .) .Release.Namespace ) ( printf "%s.%s.svc" (include "convalkontroller.fullname" .) .Release.Namespace ) -}}
+# generate ca cert with 365 days of validity
+{{- $ca := genCA "convalkontroller-ca" 365 -}}
+# generate cert with CN="convalkontroller", SAN=$altNames and with 365 days of validity
+{{- $cert := genSignedCert ( include "convalkontroller.name" . ) nil $altNames 365 $ca -}}
+# tls.crt: {{ $cert.Cert | b64enc }}
+# tls.key: {{ $cert.Key | b64enc }}
+
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/tls
+metadata:
+  name: {{ template "convalkontroller.name" . }}-certs
+  labels:
+  {{- include "convalkontroller.labels" . | nindent 4 }}
+#certs will only be generated on chart install and not upgrade    
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+data:
+    tls.crt: {{ $cert.Cert | b64enc }}
+    tls.key: {{ $cert.Key | b64enc }}
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  labels:
+    {{- include "convalkontroller.labels" . | nindent 4 }}
+  name: {{ template "convalkontroller.fullname" . }}-webhook-controller
+webhooks:
+- name: "depkon.akankshakumari393.dev"
+  rules:
+  - apiGroups:   ["akankshakumari393.dev"]
+    apiVersions: ["v1alpha1"]
+    operations:  ["CREATE", "UPDATE"]
+    resources:   ["depkons"]
+    scope:       "Namespaced"
+  clientConfig:
+    service:
+      namespace: {{ .Release.Namespace }}
+      name: {{ include "convalkontroller.fullname" . }}
+      port: {{ .Values.service.port }}
+      path: "/validate/v1alpha1/depkon"
+    caBundle: {{ b64enc $ca.Cert }}
+  admissionReviewVersions: ["v1", "v1beta1"]
+  sideEffects: None
+  timeoutSeconds: 5
+---
